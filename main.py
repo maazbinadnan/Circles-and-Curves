@@ -118,7 +118,7 @@ def paintarc(row,col):
   
 
         
-        
+       
 
 def draw_brush_widths(win):
     brush_widths = [
