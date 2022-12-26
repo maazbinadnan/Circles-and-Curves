@@ -95,9 +95,9 @@ def paintarc(row,col):
         # grid[row][col]=drawing_color
         for i in range(5):
             if(i%2!=0):
-                grid[row-i][col+4+i]=drawing_color
+                grid[row-i][col-4+i]=drawing_color
             x=row-i
-            y=col+4+i
+            y=col-4+i
         grid[x][y+1]=drawing_color
         for i in range(4):
             if(i%2!=0):
