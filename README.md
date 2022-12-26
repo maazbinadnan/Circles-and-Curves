@@ -15,5 +15,6 @@ Maaz Adnan 22763
 Added Shapes: Heart and Circle
 Added Curves : Arc, B spline and Bezier Curve
 Added shape and curve button
+Added Dotted Line button, can draw shapes in dotted lines
 
-https://github.com/maazbinadnan/PyaintArcCircle
+https://github.com/maazbinadnan/Circles-and-Curves
