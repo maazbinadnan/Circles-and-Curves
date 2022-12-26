@@ -1,6 +1,5 @@
-import pygame.mouse
-
 from utils import *
+import pygame
 
 WIN = pygame.display.set_mode((WIDTH + RIGHT_TOOLBAR_WIDTH, HEIGHT))
 pygame.display.set_caption("Pyaint")
@@ -58,6 +57,39 @@ def draw_mouse_position_text(win):
                 text_surface = pos_font.render("Swap Toolbar", 1, BLACK)
                 win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
                 break
+            if button.text == "Shapes":
+                text_surface = pos_font.render("Expand for Shape Options", 1, BLACK)
+                win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
+                break
+            if button.text == "Curves":
+                text_surface = pos_font.render("Expand for Curve Options", 1, BLACK)
+                win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
+                break
+            if button.text == "Draw Circle":
+                text_surface = pos_font.render("Draw Circle", 1, BLACK)
+                win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
+                break
+            if button.text == "Draw Heart":
+                text_surface = pos_font.render("Draw Heart", 1, BLACK)
+                win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
+                break
+            if button.text == "Draw Arc":
+                text_surface = pos_font.render("Draw Arc", 1, BLACK)
+                win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
+                break
+            if button.text == "Draw Bezier":
+                text_surface = pos_font.render("Draw Bezier Curve", 1, BLACK)
+                win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
+                break
+            if button.text == "Draw BSpline":
+                text_surface = pos_font.render("Draw BSpline", 1, BLACK)
+                win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
+                break
+            if button.text == "- - - - - - -":
+                text_surface = pos_font.render("Toggle for Solid/Dotted", 1, BLACK)
+                win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
+                break
+
             r,g,b = button.color
             text_surface = pos_font.render("( " + str(r) + ", " + str(g) + ", " + str(b) + " )", 1, BLACK)
             
@@ -90,36 +122,6 @@ def draw(win, grid, buttons):
     draw_mouse_position_text(win)
     pygame.display.update()
 
-def paintarc(row,col):
-    if DOTTED:
-        # grid[row][col]=drawing_color
-        for i in range(5):
-            if(i%2!=0):
-                grid[row-i][col-4+i]=drawing_color
-            x=row-i
-            y=col-4+i
-        grid[x][y+1]=drawing_color
-        for i in range(4):
-            if(i%2!=0):
-                grid[x+i][y+2+i]=drawing_color
-            
-        
-            
-    else:
-        
-        for i in range(4):
-            grid[row-i][col-4+i]=drawing_color
-            x=row-i
-            y=col-4+i
-        grid[x][y+1]=drawing_color
-        grid[x][y+2]=drawing_color
-        for i in range(4):
-            grid[x+i][y+2+i]=drawing_color
-  
-
-        
-       
-
 def draw_brush_widths(win):
     brush_widths = [
         Button(rtb_x - size_small/2, 480, size_small, size_small, drawing_color, None, None, "ellipse"),    
@@ -150,7 +152,7 @@ def get_row_col_from_pos(pos):
 
     if row >= ROWS:
         raise IndexError
-    if col >= ROWS:
+    if col >= COLS:
         raise IndexError
     return row, col
 
@@ -273,9 +275,11 @@ buttons.append(Button(WIDTH - button_space, button_y_top_row, button_width, butt
 buttons.append(Button(WIDTH - button_space, button_y_bot_row, button_width, button_height, WHITE, "Clear", BLACK))  # Clear Button
 buttons.append(Button(WIDTH - 3*button_space + 5, button_y_top_row,button_width-5, button_height-5, name = "FillBucket",image_url="assets/paint-bucket.png")) #FillBucket
 buttons.append(Button(WIDTH - 3*button_space + 45, button_y_top_row,button_width-5, button_height-5, name = "Brush",image_url="assets/paint-brush.png")) #Brush
-buttons.append(Button(HEIGHT - 2*button_width,button_height+350,button_width,button_height,WHITE,"Draw Shape",BLACK))
-buttons.append(Button(HEIGHT - 2*button_width,button_height+200,button_width,button_height,WHITE,"Draw Curve",BLACK))
-buttons.append(Button(HEIGHT - 2*button_width,button_height,button_width,button_height,WHITE,"- - - - - - -",BLACK))
+buttons.append(Button(HEIGHT - 2*button_width,button_height+350,button_width,button_height,GRAY,"Shapes",BLACK))
+buttons.append(Button(HEIGHT - 2*button_width,button_height+200,button_width,button_height,GRAY,"Curves",BLACK))
+buttons.append(Button(HEIGHT - 2*button_width,button_height,button_width,button_height,SILVER,"- - - - - - -",BLACK))
+
+
 
 
 draw_button = Button(5, HEIGHT - TOOLBAR_HEIGHT/2 - 30, 60, 60,drawing_color)
@@ -326,27 +330,23 @@ def get_dotted_circle_coordinates(X,Y):
 
     return list
 
-
-
-
 def draw_circle():
     radius = 5
     pos = pygame.mouse.get_pos()
-    print(pos)
     dotted = True
     x, y = get_row_col_from_pos(pos)
     if DOTTED:
          coordinates = get_dotted_circle_coordinates(x,y)
          for i in range(0,len(coordinates),2):
              x, y = coordinates[i]
-             grid[x][y] = drawing_color
+             if inBounds(x,y):
+                grid[x][y] = drawing_color
     else:
         coordinates = get_circle_coordinates(x, y, radius)
         for i in coordinates:
             x, y = i
-            grid[x][y] = drawing_color
-
-
+            if inBounds(x,y):
+                grid[x][y] = drawing_color
 
 def get_heart_coordinates(X,Y):
     list = []
@@ -406,26 +406,137 @@ def get_dotted_heart_coordinates(X,Y):
 
     return list
 
-
 def draw_heart():
     radius = 5
     pos = pygame.mouse.get_pos()
-    print(pos)
     dotted = True
     x, y = get_row_col_from_pos(pos)
     if DOTTED:
          coordinates = get_dotted_heart_coordinates(x,y)
          for i in range(0,len(coordinates),2):
              x, y = coordinates[i]
-             grid[x][y] = drawing_color
+             if inBounds(x,y):
+                grid[x][y] = drawing_color
     else:
         coordinates = get_heart_coordinates(x, y)
         for i in coordinates:
             x,y = i
-            grid[x][y] = drawing_color
+            if inBounds(x,y):
+                grid[x][y] = drawing_color
 
+def paintarc(row,col):
+    if DOTTED:
+        # grid[row][col]=drawing_color
+        for i in range(5):
+            if(i%2!=0):
+                if inBounds(row-i,col-4+i):
+                    grid[row-i][col-4+i]=drawing_color
+            x=row-i
+            y=col-4+i
+        if inBounds(x,y+1):
+            grid[x][y+1]=drawing_color
+        for i in range(4):
+            if(i%2!=0):
+                if inBounds(x+i,y+2+i):
+                    grid[x+i][y+2+i]=drawing_color
+            
+        
+            
+    else:
+        
+        for i in range(4):
+            if inBounds(row-i,col-4+i):
+                grid[row-i][col-4+i]=drawing_color
+            x=row-i
+            y=col-4+i
+        if inBounds(x,y+1):
+            grid[x][y+1]=drawing_color
+        if inBounds(x,y+2):
+            grid[x][y+2]=drawing_color
+        for i in range(4):
+            if inBounds(x+i,y+2+i):
+                grid[x+i][y+2+i]=drawing_color
 
+def draw_bezier():
+    pos = pygame.mouse.get_pos()
+    x, y = get_row_col_from_pos(pos)
+    step=1
 
+    if DOTTED:
+        step=2
+    
+    for i in range(0,3,1):
+        for j in range(i,i+3,step):
+            a=x-i-3
+            b=y+j+2*i
+            if inBounds(a,b):
+                grid[a][b] = drawing_color
+                
+    for i in range(0,2,1):
+        for j in range(i,i+2,step):
+            a=x-i-1
+            b=y+j+i-4
+            if inBounds(a,b):
+                grid[a][b] = drawing_color
+                
+    if inBounds(x,y-5):
+        grid[x][y-5] = drawing_color
+    
+    for i in range(0,3,1):
+        for j in range(i,i+3,step):
+            a=x+i+3
+            b=y+j+2*i
+            if inBounds(a,b):
+                grid[a][b] = drawing_color
+                
+    for i in range(0,2,1):
+        for j in range(i,i+2,step):
+            a=x+i+1
+            b=y+j+i-4
+            if inBounds(a,b):
+                grid[a][b] = drawing_color
+                
+def get_solid_bspline_coordinates(X,Y):
+    list= []
+    for i in range(4):
+        list.append((X + i, Y - 7 - i))
+        list.append((X - i, Y - 7 + i))
+    list.append((X,Y))
+    for i in range(4):
+        list.append((X + i, Y + 7 - i))
+        list.append((X - i, Y + 7 + i))
+    for i in range(4):
+        list.append((X - i, Y - i))
+        list.append((X + i, Y + i))
+    return list
+
+def get_dotted_bspline_coordinates(X,Y):
+    list= []
+    for i in range(0,4,2):
+        list.append((X + i, Y - 7 - i))
+        list.append((X - i, Y - 7 + i))
+    list.append((X,Y))
+    for i in range(0,4,2):
+        list.append((X + i, Y + 7 - i))
+        list.append((X - i, Y + 7 + i))
+    for i in range(0,4,2):
+        list.append((X - i, Y - i))
+        list.append((X + i, Y + i))
+    return list
+
+def draw_bspline():
+    pos = pygame.mouse.get_pos()
+    x, y = get_row_col_from_pos(pos)
+    if DOTTED:
+        coordinates = get_dotted_bspline_coordinates(x,y)
+    else:
+        coordinates = get_solid_bspline_coordinates(x,y)
+
+    for i in coordinates:
+            x, y = i
+            if inBounds(x,y):
+                grid[x][y] = drawing_color
+   
 clicks = 0
 while run:
     clock.tick(FPS) #limiting FPS to 60 or any other value
@@ -451,7 +562,11 @@ while run:
                     draw_heart()
                 elif STATE == "ARC": #Draws an arc
                     paintarc(row,col)
-
+                elif STATE == "DRAW BEZIER":
+                    draw_bezier()
+                elif STATE == "DRAW BSPLINE":
+                    draw_bspline()
+                    
             except IndexError:
                 for button in buttons:
                     if not button.clicked(pos):
@@ -483,14 +598,14 @@ while run:
                         STATE = "COLOR"
                         break
 
-                    if button.text == "Draw Shape":
+                    if button.text == "Shapes":
                         buttons.append(Button(HEIGHT - 2 * button_width,button_height + 300, button_width, button_height,WHITE, "Draw Circle", BLACK))
                         buttons.append(Button(HEIGHT - 2 * button_width, button_height + 250, button_width, button_height, WHITE, "Draw Heart", BLACK))
 
 
                         break
 
-                    if button.text == "Draw Curve":
+                    if button.text == "Curves":
                         buttons.append(
                             Button(HEIGHT - 2 * button_width, button_height + 150, button_width, button_height, WHITE,
                                    "Draw Arc", BLACK))
@@ -513,11 +628,22 @@ while run:
                     if button.text=="Draw Arc":
                         STATE="ARC"
                         break
+                    if button.text == "Draw Bezier":
+                        STATE = "DRAW BEZIER"
+                        break
+                    if button.text == "Draw BSpline":
+                        STATE = "DRAW BSPLINE"
+                        break
                     if button.text == "- - - - - - -":
                         if DOTTED:
                             DOTTED = False
+                            buttons.remove(button)
+                            buttons.append(Button(HEIGHT - 2*button_width,button_height,button_width,button_height,SILVER,"- - - - - - -",BLACK))
                         else:
                             DOTTED = True
+                            buttons.remove(button)
+                            buttons.append(Button(HEIGHT - 2*button_width,button_height,button_width,button_height,GRAY,"- - - - - - -",BLACK))
+                        
                         break
                     
                     drawing_color = button.color
